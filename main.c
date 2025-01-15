@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <ctype.h>
 
 #define BIT_SIZE 8
 
@@ -14,6 +16,9 @@ struct ALU_8_BIT {
     int operator_type;
     char operator[5];
 };
+
+char CHAR_REG[10];
+int INT_REG[10];
 
 int ALU_COMPUTATION_RESULT(struct ALU_8_BIT *alu_one) {
     int operand_one_int = strtol(alu_one->operand_one, NULL, 2);
@@ -84,4 +89,15 @@ int ALU_COMPUTATION_RESULT(struct ALU_8_BIT *alu_one) {
         printf("Error: Invalid operator type!\n");
         return -1;
     }
+}
+
+
+void STORE_OPERATION_CHAR(char operand){
+        int random_range = (rand() % 10);
+        CHAR_REG[random_range] = operand;
+}
+
+void STORE_OPERATION_INT(int operand){
+        int random_range = (rand() % 10);
+        CHAR_REG[random_range] = operand;
 }
