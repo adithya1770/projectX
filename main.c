@@ -12,7 +12,17 @@ struct ALU_8_BIT {
     char operator[5];
 };
 
-/* INSTRUCTION REGISTER FOR AN 8-bit CPU*/
+/* INSTRUCTION REGISTER FOR AN 8-bit CPU RAM*/
+struct INSTRUCTION_REGISTER_1{
+    int address;
+    struct INSTRUCTION_REGISTER_RAM IRM;
+};
+
+/* INSTRUCTION REGISTER FOR AN 8-bit CPU DAM*/
+struct INSTRUCTION_REGISTER_2{
+    int address;
+    struct INSTRUCTION_REGISTER_DAM IRD;
+};
 
 /* FOR DIRECT ADDRESSING MODE */
 struct INSTRUCTION_REGISTER_DAM{
@@ -28,6 +38,8 @@ struct INSTRUCTION_REGISTER_RAM{
     char operand_two[5];
 };
 
+/* MAIN MEMORY */
+int memory[256];
 
 /* CHARACTER REGISTERS */
 
@@ -138,7 +150,7 @@ void STORE_CHARACTER(char CHAR_REG[5], int operand) {
 
 /* LOAD INTEGER VALUES FROM INTEGER REGISTER */
 
-int LOAD_INTEGER(char INT_REG[5]) {
+int LOAD_INTEGER_MDR(char INT_REG[5]) {
     if (strcmp(INT_REG, "Ri_0") == 0) {
         return Ri_0;
     }
@@ -155,7 +167,7 @@ int LOAD_INTEGER(char INT_REG[5]) {
 
 /* LOAD CHARACTER VALUES FROM CHARACTER REGISTER */
 
-int LOAD_CHARACTER(char CHAR_REG[5]) {
+int LOAD_CHARACTER_MDR(char CHAR_REG[5]) {
     if (strcmp(CHAR_REG, "Rc_0") == 0) {
         return Ri_0;
     }
@@ -517,3 +529,52 @@ int INSTRUCTION_DECODER_DAA(struct INSTRUCTION_REGISTER_DAM IDD){
         ALU_COMPUTATION_RESULT(alu_one);
     }
 }
+
+void STORE_MEMORY(int address, int value) {
+    if (address >= 0 && address < 256) {
+        memory[address] = value;
+    }
+}
+
+void PROGRAM_COUNTER_DAM(int starting_address, int last_address, struct INSTRUCTION_REGISTER_2 ir){
+    struct INSTRUCTION_REGISTER_DAM INTERNAL_ADDRESS;
+    for(int i=starting_address; i<=last_address; i++){
+       if(i == ir.address){
+        strcpy(INTERNAL_ADDRESS.alu_opcode, ir.IRD.alu_opcode);
+        INTERNAL_ADDRESS.operand_one = ir.IRD.operand_one;
+        INTERNAL_ADDRESS.operand_two = ir.IRD.operand_two;
+        INSTRUCTION_DECODER_DAA(INTERNAL_ADDRESS);
+       }
+    }
+}
+
+void PROGRAM_COUNTER_RAM(int starting_address, int last_address, struct INSTRUCTION_REGISTER_1 ir){
+    struct INSTRUCTION_REGISTER_RAM INTERNAL_ADDRESS;
+    for(int i=starting_address; i<=last_address; i++){
+       if(i == ir.address){
+        strcpy(INTERNAL_ADDRESS.alu_opcode, ir.IRM.alu_opcode);
+        strcpy(INTERNAL_ADDRESS.operand_one, ir.IRM.operand_one);
+        strcpy(INTERNAL_ADDRESS.operand_two, ir.IRM.operand_two);
+        INSTRUCTION_DECODER_RAM(INTERNAL_ADDRESS);
+       }
+    }
+}
+
+struct INSTRUCTION_REGISTER_RAM MAR_R(int address ,struct INSTRUCTION_REGISTER_1 * ir){
+    while(ir != NULL){
+        if(ir->address == address){
+            return ir->IRM;
+        }
+    }
+}
+
+struct INSTRUCTION_REGISTER_DAM MAR_D(int address ,struct INSTRUCTION_REGISTER_2 * ir){
+    while(ir != NULL){
+        if(ir->address == address){
+            return ir->IRD;
+        }
+    }
+}
+
+/* THERE IS A LOT TO BE DONE ITS JUST A NORMAL SIMULATION OF A 8 BIT BAREBONES ALU [basic computer]*/
+/* MADE BY THE GIGA CHAD ADITHYA P S USING ALIEN INTELLECT */
